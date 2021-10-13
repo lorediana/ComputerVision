@@ -4,4 +4,4 @@ Write a Python function similar to the function gaussian_fourier_filter provided
 filtering in frequency domain. The function will receive as parameters: the cut-off frequency D0, the high frequency gain gamma_H, the low frequency gain gamma_L, 
 and the input image.
 
-In homework.py we can find the requested function homomorphic_filter that applies the specified instructions to an input image.
+In homework1.py we can find the requested function homomorphic_filter that applies the specified instructions to an input image.
