@@ -29,7 +29,6 @@ def homomorphic_filter(img, d0, gammaL, gammaH):
     return result
 
 
-
 if __name__ == "__main__":
     img = cv2.imread("download.jpeg")
     cv2.imshow("Original image", img)
