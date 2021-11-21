@@ -5,3 +5,7 @@ filtering in frequency domain. The function will receive as parameters: the cut-
 and the input image.
 
 In homework1.py we can find the requested function homomorphic_filter that applies the specified instructions to an input image.
+
+
+# Homework 2
+Instructions can be found on classroom https://classroom.google.com/u/1/c/Mzk3MTA3MDg5Mzc5/a/NDE3OTQzMDUzOTg1/details.
