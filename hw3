@@ -1,0 +1,85 @@
+from sklearn.svm import LinearSVC
+import numpy as np
+import cv2
+import os
+
+POS_PATH = "./pos_person"
+NEG_PATH = "./neg_person"
+
+
+class HOGProcessor:
+
+    def __init__(self, pos, neg, block_s=(16, 16), cell_s=(8, 8), bins_n=9):
+        # img_orig = cv2.imread("images/0_28x28.png", cv2.IMREAD_GRAYSCALE)
+        # img_orig = cv2.resize(cv2.imread("images/sunriseCross.jpg", cv2.IMREAD_GRAYSCALE), (96, 64))
+        # cv2.imshow("Original", img_orig)
+        # cv2.waitKey()
+        print("Init")
+        self.neg_path = neg
+        self.pos_path = pos
+        self.block_size = block_s
+        self.cell_size = cell_s
+        self.bins = bins_n
+
+    @staticmethod
+    def load_images_from_folder(folder):
+        _images = []
+        for filename in os.listdir(folder):
+            img = cv2.imread(os.path.join(folder, filename), 0)
+            if img is not None:
+                _images.append(img)
+        return _images
+
+    def computeHOG(self, img):
+
+        hog = cv2.HOGDescriptor(_winSize=(img.shape[1] // self.cell_size[1] * self.cell_size[1],
+                                  img.shape[0] // self.cell_size[0] * self.cell_size[0]),
+                        _blockSize=(self.block_size[1] * self.cell_size[1],
+                                    self.block_size[0] * self.cell_size[0]),
+                        _blockStride=(self.cell_size[1], self.cell_size[0]),
+                        _cellSize=(self.cell_size[1], self.cell_size[0]),
+                        _nbins=self.bins)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        hist = hog.compute(gray)
+        return hist
+
+    def generate_features(self, folder):
+        images = self.load_images_from_folder(folder)
+        features = []
+        for i in images:
+            hist = self.computeHOG(i)
+            features.append(hist)
+
+        return features
+
+    def train_svm(self, features, labels):
+        # Create SVM classifier
+        svm = cv2.ml.SVM_create()
+        svm.setType(cv2.ml.SVM_C_SVC)
+        svm.setKernel(cv2.ml.SVM_RBF)  # cv2.ml.SVM_LINEAR
+        svm.setGamma(5.383)
+        svm.setC(2.67)
+
+
+        # Train
+        svm.train(features, cv2.ml.ROW_SAMPLE, labels)
+        print(svm.support_vectors_)
+        print(svm.support_)
+
+
+   # def predict(self):
+
+if __name__ == '__main__':
+    h = HOGProcessor(POS_PATH, NEG_PATH)
+
+    labels = []
+
+    features = h.generate_features(POS_PATH)
+    [labels.append(+1) for _ in range(len(features))]
+
+    features = h.generate_features(NEG_PATH)
+    [labels.append(-1) for _ in range(len(features))]
+
+    h.train_svm(features, labels)
+
+
